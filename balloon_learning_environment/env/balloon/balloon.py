@@ -261,6 +261,10 @@ class Balloon:
 
   def __init__(self, balloon_state: BalloonState):
     self.state = balloon_state
+    self.envelope_burst = False        # already exists — use for rupture flag
+    self.rupture_time = None           # record time of rupture
+    self.healed = False                # optional tracking for plotting/logging
+
 
   def simulate_step(
       self,
