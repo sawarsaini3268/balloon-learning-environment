@@ -263,7 +263,7 @@ class Balloon:
     self.state = balloon_state
     self.envelope_burst = False        # already exists — use for rupture flag
     self.rupture_time = None           # record time of rupture
-    self.healed = False                # optional tracking for plotting/logging
+    self.healed = False                # tracking for plotting/logging
 
 
   def simulate_step(
@@ -288,6 +288,15 @@ class Balloon:
         of stride.
       stride: The step size for the simulation of the balloon physics.
     """
+    def repair(self):
+    """Simulate self-healing of the balloon envelope."""
+    if self.envelope_burst:
+        print("Balloon is healing...")
+        self.envelope_burst = False
+        self.envelope_volume *= 2.5  # partially restore volume
+        self.payload_mass -= 0.1     # reverse mass penalty
+        self.healed = True
+
 
     self.state.last_command = action
 
