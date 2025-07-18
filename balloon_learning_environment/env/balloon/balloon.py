@@ -424,6 +424,26 @@ def _simulate_step_internal(
     atmosphere: standard_atmosphere.Atmosphere,
     action: control.AltitudeControlCommand,
     stride: dt.timedelta,
+
+    # Check for rupture event
+    if self.state.envelope_superpressure > self.state.envelope_max_superpressure and not self.state.envelope_burst:
+      print("Balloon ruptured!")
+      self.state.envelope_burst = True
+      self.state.rupture_time = time.time()
+      self.state.envelope_volume *= 0.4
+      self.state.payload_mass += 0.1
+      self.state.healed = False
+
+    if self.state.envelope_burst:
+      self.state.vertical_velocity = -3.0  # Simulate forced descent
+
+    # Check for time since rupture and 21 seconds for healing 
+    if self.state.envelope_burst and self.state.rupture_time:
+      elapsed = time.time() - self.state.rupture_time
+    if elapsed >= 21:
+        self.state.repair()
+        self.state.rupture_time = None
+    
 ) -> Dict[str, Any]:
   """Steps forward the simulation.
 
